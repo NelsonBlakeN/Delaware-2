@@ -33,13 +33,14 @@ class DbConnector:
 
     #-----------------------------------------
     # Name: Upload
-    # PreCondition:  The data to upload and location are both valid
+    # PreCondition:  The data and time to upload, as well as
+    #                location are all valid
     # PostCondition: The correct query will be executed. The
     #                results will be saved in the database.
     #-----------------------------------------
-    def Upload(self, data=None, location=None):
+    def Upload(self, data=None, time=None, location=None):
         # Sanitize inputs based on content and type
-        if data is None or location is None:
+        if data is None or location is None or time is None:
             print("ERROR bad inputs; returning.")
             return
 
@@ -47,8 +48,12 @@ class DbConnector:
             print("ERROR bad inputs; returning.")
             return
 
+        date_time = str(time).split()
+        date = date_time[0]
+        time = date_time[1]
+
         # Execute insertion query
-        q = "INSERT INTO `{}` (`time`) VALUES ('{}')" % location, data
+        q = "INSERT INTO `{}` (`time`, `Direction`, `date`) VALUES ('{}, {}, {}')".format(location, time, data, date)
         self.conn.query(q)
         self.conn.commit()
 

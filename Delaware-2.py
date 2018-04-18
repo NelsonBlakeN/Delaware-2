@@ -10,18 +10,22 @@
     traffic data from the Arduino, and send it to the
     database.
 '''''''''''''''''''''''''''
-try:
-    import traceback
-except:
-    print("ERROR: Traceback couldn't be imported.")
+import sys
 
 try:
-    import DbConnector
+    import traceback
+except Exception as e:
+    print("ERROR: Traceback couldn't be imported: {}".format(e))
+    print("Exiting")
+    sys.exit()
+
+try:
+    from DbConnector import DbConnector
     import serial
-except:
-    err = traceback.format_exc()
-    print("ERROR: Import error occurred; exiting.")
-    print(err)
+    from datetime import datetime
+except Exception as e:
+    print("ERROR: Import error occurred: {}\nExiting.".format(e))
+    sys.exit()
 
 #-----------------------------------------
 # Name: main
@@ -41,7 +45,7 @@ def main():
 
         # Creating necessary objects
         arduinoSerialData = serial.Serial(DEVPORT, BAUDRATE)    # Collect serial data from Ardunio
-        DbConnector database = DbConnector(db=DATABASE, user=USER, passwd=PASSWD)
+        database = DbConnector(DATABASE, USER, PASSWD)
 
         print("Running Delaware-2...")
 
@@ -49,16 +53,18 @@ def main():
         arduinoSerialData.flushInput()
     except Exception as e:
         print("ERROR Python setup failed: {}".format(e))
+        sys.exit()
 
     # Read data from Arduino
     while True:
+        # Current timestamp
+        now = datetime.now()
         if arduinoSerialData.inWaiting() > 0:
             # Recieved data from the Arduino
             data = arduinoSerialData.read()
 
-            # TODO: Assuming this is a timestamp. Likely to change
             if data:
-                database.upload(data, LOCATION)
+                database.Upload(data, now, LOCATION)
 
 if __name__ == "__main__":
     main()
