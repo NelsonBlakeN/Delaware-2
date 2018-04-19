@@ -23,9 +23,13 @@ try:
     from DbConnector import DbConnector
     import serial
     from datetime import datetime
+    from threading import Timer
 except Exception as e:
     print("ERROR: Import error occurred: {}\nExiting.".format(e))
     sys.exit()
+
+times = []
+TIME_INTERVAL = 60
 
 #-----------------------------------------
 # Name: main
@@ -55,16 +59,33 @@ def main():
         print("ERROR Python setup failed: {}".format(e))
         sys.exit()
 
+    Timer(TIME_INTERVAL, sendData).start()
+
     # Read data from Arduino
     while True:
         # Current timestamp
         now = datetime.now()
+
+        # Check for data in the serial buffer
         if arduinoSerialData.inWaiting() > 0:
             # Recieved data from the Arduino
             data = arduinoSerialData.read()
 
             if data:
                 database.Upload(data, now, LOCATION)
+
+def sendData(self):
+    count = len(times)
+    if(count > 0):
+        print("Uploading data...")
+        for time in times:
+            self.DbConnector.Upload(time)
+        self.times = []
+        print("Upload complete, sent " + str(count) + " items")
+    else:
+        print("No data, skipping upload")
+    #run it again in a bit
+    Timer(TIME_INTERVAL, self.sendData).start()
 
 if __name__ == "__main__":
     main()
