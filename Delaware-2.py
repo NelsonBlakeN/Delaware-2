@@ -12,15 +12,9 @@
 '''''''''''''''''''''''''''
 import sys
 
+# IMPROVEMENT: Error handling
 try:
-    import traceback
-except Exception as e:
-    print("ERROR: Traceback couldn't be imported: {}".format(e))
-    print("Exiting")
-    sys.exit()
-
-try:
-    from DbConnector import DbConnector
+    import DbConnector
     import serial
     from datetime import datetime
     from threading import Timer
@@ -28,64 +22,86 @@ except Exception as e:
     print("ERROR: Import error occurred: {}\nExiting.".format(e))
     sys.exit()
 
-times = []
+# IMPROVEMENT: Change time interval from function to constant
 TIME_INTERVAL = 60
 
+# IMPROVEMENT: Commenting/headers
 #-----------------------------------------
 # Name: main
 # PreCondition:  None
 # PostCondition: Database entries will exist, with accurate information
 #                about car occupancy in a given parking lot.
 #-----------------------------------------
-def main():
-    try:
-        # Define constants
-        DEVPORT = '/dev/ttyACM0'    # Serial port used by Arduino on host machine
-        BAUDRATE = 9600
-        DATABASE = "blake.nelson"
-        USER = "Blake.Nelson"
-        PASSWD = "Tamu@2019"
-        LOCATION = ""               # Parking lot location
+class Main:
+    # IMPROVEMENT: Constants
+    # Define constants
+    DEVPORT = '/dev/ttyACM0'    # Serial port used by Arduino on host machine
+    BAUDRATE = 9600
+    DATABASE = "blake.nelson"
+    USER = "Blake.Nelson"
+    PASSWD = "Tamu@2019"
+    LOCATION = ""               # Parking lot location
 
-        # Creating necessary objects
-        arduinoSerialData = serial.Serial(DEVPORT, BAUDRATE)    # Collect serial data from Ardunio
-        database = DbConnector(DATABASE, USER, PASSWD)
-
-        print("Running Delaware-2...")
-
-        # Flush buffer before beginning
-        arduinoSerialData.flushInput()
-    except Exception as e:
-        print("ERROR Python setup failed: {}".format(e))
-        sys.exit()
-
-    Timer(TIME_INTERVAL, sendData).start()
-
-    # Read data from Arduino
-    while True:
-        # Current timestamp
-        now = datetime.now()
-
-        # Check for data in the serial buffer
-        if arduinoSerialData.inWaiting() > 0:
-            # Recieved data from the Arduino
-            data = arduinoSerialData.read()
-
-            if data:
-                database.Upload(data, now, LOCATION)
-
-def sendData(self):
-    count = len(times)
-    if(count > 0):
-        print("Uploading data...")
-        for time in times:
-            self.DbConnector.Upload(time)
+    def __init__(self):
         self.times = []
-        print("Upload complete, sent " + str(count) + " items")
-    else:
-        print("No data, skipping upload")
-    #run it again in a bit
-    Timer(TIME_INTERVAL, self.sendData).start()
+        self.board = serial.Serial(DEVPORT, BAUDRATE)
+        self.debug = (input("Debug mode? (y/n) ") == "y")
+        if not self.debug:
+            self.DbConnector = DbConnector.DbConnector(
+            DATABASE,
+            USER,
+            PASSWD
+            )
+        print("Initialization complete")
+
+    def run():
+        self.running = True
+        try:
+            if not self.debug:
+                Timer(TIME_INTERVAL, self.sendData).start()
+
+                # Flush buffer before beginning
+                self.board.flushInput()
+
+                print("Setup complete")
+
+                while True:
+                    # Current timestamp
+                    now = datetime.now()
+
+                    # Check for data in the serial buffer
+                    if self.board.inWaiting() > 0:
+                        # Received data from the Arduino
+                        data = self.board.read()
+                        if data:
+                            addTimeStamp(now, data)
+
+        except Exception as e:
+            print("ERROR Python setup failed: {}".format(e))
+            sys.exit()
+
+    def sendData(self):
+        count = len(times)
+        if(count > 0):
+            print("Uploading data...")
+            for entry in times:
+                data = entry[0]
+                time = entry[1]
+                self.DbConnector.Upload(data, time, LOCATION)
+            self.times = []
+            print("Upload complete, sent " + str(count) + " items")
+        else:
+            print("No data, skipping upload")
+        #run it again in a bit
+        Timer(TIME_INTERVAL, self.sendData).start()
+
+    def addTimeStamp(self, direction, timeStamp):
+        if self.debug:
+            pass
+        else:
+            print("Car passed at ", timeStamp)
+            self.times.append((direction, timeStamp))
 
 if __name__ == "__main__":
-    main()
+    m = Main()
+    m.run()
