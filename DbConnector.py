@@ -11,11 +11,13 @@
     to upload data and close the connection made when
     an object is created.
 '''''''''''''''''''''''''''
+import sys
 
 try:
     from _mysql import connect
 except Exception as e:
     print("ERROR during import: {}".format(e))
+    sys.exit()
 
 class DbConnector:
     #-----------------------------------------

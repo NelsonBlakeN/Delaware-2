@@ -18,14 +18,13 @@ try:
     import serial
     from datetime import datetime
     from threading import Timer
+    from _mysql import connect
 except Exception as e:
     print("ERROR: Import error occurred: {}\nExiting.".format(e))
     sys.exit()
 
-# IMPROVEMENT: Change time interval from function to constant
 TIME_INTERVAL = 60
 
-# IMPROVEMENT: Commenting/headers
 #-----------------------------------------
 # Name: main
 # PreCondition:  None
@@ -33,7 +32,6 @@ TIME_INTERVAL = 60
 #                about car occupancy in a given parking lot.
 #-----------------------------------------
 class Main:
-
     def __init__(self):
        # IMPROVEMENT: Constants
         # Define constants
@@ -75,7 +73,7 @@ class Main:
                         # Received data from the Arduino
                         data = self.board.read()
                         if data:
-                            addTimeStamp(now, data)
+                            addTimeStamp(data, now)
 
         except Exception as e:
             print("ERROR Python setup failed: {}".format(e))
@@ -93,7 +91,7 @@ class Main:
             print("Upload complete, sent " + str(count) + " items")
         else:
             print("No data, skipping upload")
-        #run it again in a bit
+        # Run it again in a bit
         Timer(TIME_INTERVAL, self.sendData).start()
 
     def addTimeStamp(self, direction, timeStamp):
