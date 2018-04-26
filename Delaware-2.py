@@ -33,16 +33,17 @@ TIME_INTERVAL = 60
 #                about car occupancy in a given parking lot.
 #-----------------------------------------
 class Main:
-    # IMPROVEMENT: Constants
-    # Define constants
-    DEVPORT = '/dev/ttyACM0'    # Serial port used by Arduino on host machine
-    BAUDRATE = 9600
-    DATABASE = "blake.nelson"
-    USER = "Blake.Nelson"
-    PASSWD = "Tamu@2019"
-    LOCATION = ""               # Parking lot location
 
     def __init__(self):
+       # IMPROVEMENT: Constants
+        # Define constants
+        DEVPORT = '/dev/ttyACM0'    # Serial port used by Arduino on host machine
+        BAUDRATE = 9600
+        DATABASE = "blake.nelson"
+        USER = "Blake.Nelson"
+        PASSWD = "Tamu@2019"
+        LOCATION = ""               # Parking lot location
+
         self.times = []
         self.board = serial.Serial(DEVPORT, BAUDRATE)
         self.debug = (input("Debug mode? (y/n) ") == "y")
