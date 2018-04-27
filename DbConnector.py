@@ -46,16 +46,16 @@ class DbConnector:
             print("ERROR bad inputs; returning.")
             return
 
-        if type(data) is not str or type(location) is not str:
-            print("ERROR bad inputs; returning.")
-            return
+        # if type(data) is not str or type(location) is not str:
+        #     print("ERROR Inputs aren't strings; returning.")
+        #     return
 
         date_time = str(time).split()
         date = date_time[0]
         time = date_time[1]
 
         # Execute insertion query
-        q = "INSERT INTO `{}` (`time`, `Direction`, `date`) VALUES ('{}, {}, {}')".format(location, time, data, date)
+        q = "INSERT INTO `{}` (`counter`, `time`, `Direction`, `date`) VALUES ('NULL', '{}', '{}', '{}')".format(location, time, data, date)
         self.conn.query(q)
         self.conn.commit()
 

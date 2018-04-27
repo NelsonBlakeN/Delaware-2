@@ -2,7 +2,7 @@ import DbConnector
 from datetime import datetime
 
 DATABASE = "blake.nelson"
-USER = "Blake.Nelson"
+USER = "blake.nelson"
 PASSWD = "Tamu@2019"
 LOCATION = "Lot 35"
 
