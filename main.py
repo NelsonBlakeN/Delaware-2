@@ -40,6 +40,7 @@ class Main:
         USER = "blake.nelson"
         PASSWD = "Tamu@2019"
         self.LOCATION = input("Enter the parking lot: ")    # Parking lot location
+        self.DIRECTION = input("Enter/Exit? (1/0): ")       # Direction
 
         self.times = []
         self.board = serial.Serial(DEVPORT, BAUDRATE)
@@ -80,6 +81,9 @@ class Main:
                         data = self.board.read()
                         print(str(now) + ": " + str(data))
                         if data:
+                            # Alter data if sensor is detecting exiting traffic
+                            if self.DIRECTION == 0:
+                                data = 0
                             self.AddTimeStamp(data, now)
 
         except Exception as e:
