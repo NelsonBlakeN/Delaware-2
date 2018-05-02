@@ -1,3 +1,14 @@
+<!--
+/* ****************************************************
+    File:       HourPrediction.php
+    Project:    CSCE 315 Project 2, Spring 2018
+    Date:       4/19/2018
+    Section:    504
+
+    This page presents a chart that walks the user through a prediction model for a given input hour and date
+******************************************************* */
+-->
+
 <?php
 
 include('CommonMethods.php');
@@ -19,7 +30,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$COMMON -> set_chart_hour_prediction($dataPoints, $charttitle, $hour, $date, "Lot 35");
+$COMMON -> SetChartHourPrediction($dataPoints, $charttitle, $hour, $date, "Lot 35");
 
 ?>
 <!DOCTYPE HTML>
