@@ -1,6 +1,6 @@
 <?php
 
-include('CommonMethods.php');
+include('php_api.php');
 
 //global variables
 $debug = false;
@@ -10,16 +10,17 @@ $dataPoints;
 $charttitle;
 
 //input variables
-$hour = ($_POST["Hour"]);
+$starthour = ($_POST["Starthour"]);
+$endhour = ($_POST["Endhour"]);
 $date = ($_POST["Date"]);
-echo($starthour);
 	
 //error checking
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$COMMON -> set_chart_hour_prediction($dataPoints, $charttitle, $hour, $date, "Lot 35");
+//setting the chart properties
+$COMMON -> setcharthours($dataPoints, $charttitle, $starthour, $endhour, $date);
 
 ?>
 <!DOCTYPE HTML>
@@ -27,8 +28,6 @@ $COMMON -> set_chart_hour_prediction($dataPoints, $charttitle, $hour, $date, "Lo
 <head>  
 <script>
 window.onload = function () {
-
-setTimeout("location.reload(true);", 5000);
  
 var chart = new CanvasJS.Chart("chartContainer", {
 	animationEnabled: true,
@@ -53,9 +52,5 @@ chart.render();
 <body style="background-color:powderblue;">
 <div id="chartContainer" style="height: 370px; width: 100%;"></div>
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-<br>
-<form>
-<input type="button" value="Return" onclick="window.location.href='http://projects.cse.tamu.edu/amiller15/315P2/Websitephp/Xindex.php'" />
-</form>
 </body>
 </html> 

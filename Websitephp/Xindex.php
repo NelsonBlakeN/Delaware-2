@@ -140,11 +140,23 @@ SECTION 2: form and such
 
 <fieldset>
   <table>
+    <form action="WeekChart.php" method="post">
+      Data Visualizer: <br/>
+      Start Date: <input type="date" name="Startdate" value="2018-04-15"><br>
+      End Date: <input type="date" name="Enddate" value="2018-05-15"><br>
+      <input type="submit">
+    </form>
+  </table>
+</fieldset>
+<br/>
+
+<fieldset>
+  <table>
     <form action = "HourPrediction.php" method = "post">
       <tr>
         Predictive Model for Hour: <br>
         <input type="time" name="Hour" value="06:00"><br>
-        <input type="date" name="Date" value ="2018-04-15"><br>
+        <input type="date" name="Date" value ="2018-05-15"><br>
       </tr>
       <tr>
         <td><input type="submit"></input></td>
@@ -160,7 +172,7 @@ SECTION 2: form and such
       <tr>
         Change Location: <br>
         <input type="radio" name="Location" value="Lot 35" checked> Lot 35<br>
-        <input type="radio" name="Location" value="Lot 80"> Lot 80<br>
+        <input type="radio" name="Location" value="Lot 54"> Lot 54<br>
       </tr>
       <tr>
         <td><input type="submit"></input></td>
@@ -170,10 +182,20 @@ SECTION 2: form and such
 </fieldset>
 <br/>
 
-<br>
-<form>
-<input type="button" value="Add Dummy Data" onclick="window.location.href='http://projects.cse.tamu.edu/amiller15/315P2/Websitephp/DummyInput.php'" />
-</form>
+<fieldset>
+  <table>
+    <form action = "DummyInput.php" method = "post">
+      <tr>
+        Add Dummy Data: <br>
+        Start Date: <input type="date" name="Startdate" value="2018-04-22"><br>
+        End Date: <input type="date" name="Enddate" value="2018-04-29">
+      <tr>
+        <td><input type="submit"></input></td>
+      </tr>
+    </form>
+  </table>
+</fieldset>
+<br/>
 
 </div>
 
@@ -194,9 +216,7 @@ SECTION 3: query
 <?php
 
 echo("<h1>Results</h1>");
-echo("<p>Min: ".($min+1)."</p>");
-echo("<p>Max: ".($max-1)."</p>");
-echo("<p>Count: ".($count)."</p>");
+echo("<p>Total Count: ".($count)."</p>");
 echo("<p>Location: ".($Location)."</p>");
 
 ?>
