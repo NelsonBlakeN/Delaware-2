@@ -1,13 +1,15 @@
 <!--
 ===========================================================================
-TODO:
+Requirements:
 
-As if it can go between Lots 35 and 54 
+Add location specific databases
 
-RECORD ALL CHANGES TO IMPROVEMENTS in PROJECT 2:
+The interface will be important, and should be able to constantly update in real-time (without refreshing the screen)
 
-Adding file to run helper functions
-
+Within the given UI, after selecting a particular location the apparatus was used, using a prediction model (soft AI), 
+model the growth of usage this particular lot will see. Parking Services left this feature WIDE open. 
+What model, growth rate, etc… your group uses is entirely up to you. But make it easy to use with simple options. 
+You are able to add to the given interface to view the predictive model.
 
 
 ===========================================================================
@@ -15,17 +17,11 @@ Adding file to run helper functions
 
 <?php
 
-include("CommonMethods.php");
+include("ComlgmonMethods.php");
 $debug = false;
 $COMMON = new Common($debug);
 
-//getting or setting the current location
-if(isset($_POST['Location'])){
-  $Location = ($_POST['Location']);
-}
-else $Location = "Lot 35";
-
-$DBNAME = $Location;
+$DBNAME = "Project1";
 
 //process query
 
@@ -45,7 +41,8 @@ if(isset($_GET['count'])) {
   //set the number of records
   $gcount = $_GET['count'];
   $min = $max - $gcount - 1;
-} else if(isset($_GET['min']) && isset($_GET['max'])) {
+} 
+else if(isset($_GET['min']) && isset($_GET['max'])) {
   $min = $_GET['min'] - 1;
   $max = $_GET['max'] + 1;
 }
@@ -58,9 +55,6 @@ if(!isset($gcount)) {
 $min1 = $min + 1;
 $max1 = $max - 1;
 
-//getting the number of entries in the database
-$count = $COMMON ->countrs($COMMON -> all("Lot 35"));
-
 ?>
 
 <!--
@@ -68,9 +62,6 @@ $count = $COMMON ->countrs($COMMON -> all("Lot 35"));
 SECTION 1: initial php and db
 ===========================================================================
 -->
-<head>
-
-</head>
 
 
 <style>
@@ -93,7 +84,7 @@ SECTION 2: form and such
 
 <fieldset>
   <table>
-    <form method="get" action="Xindex.php">
+    <form method="get" action="index.php">
       <tr>
         <td><label>Min:</label></td>
         <?php
@@ -111,12 +102,12 @@ SECTION 2: form and such
       </tr>
     </form>
   </table>
-
 </fieldset>
 <br/>
+
 <fieldset>
   <table>
-    <form method="get" action="Xindex.php">
+    <form method="get" action="index.php">
       <tr>
         <td><label>Count:</label></td>
         <?php
@@ -129,67 +120,17 @@ SECTION 2: form and such
     </form>
   </table>
 </fieldset>
-</fieldset>
 <br/>
 
 <fieldset>
   <table>
-    <form action="WeekChart.php" method="post">
-      Data Visualizer: <br/>
-      Start Date: <input type="date" name="Startdate" value="2018-04-15"><br>
-      End Date: <input type="date" name="Enddate" value="2018-05-15"><br>
-      <input type="submit">
-    </form>
+    <tr>
+      <td>
+        <input type="reset" onclick="window.location.assign(window.location.origin + window.location.pathname)"></input>
+      </td>
+    </tr>
   </table>
 </fieldset>
-<br/>
-
-<fieldset>
-  <table>
-    <form action = "HourPrediction.php" method = "post">
-      <tr>
-        Predictive Model for Hour: <br>
-        <input type="time" name="Hour" value="06:00"><br>
-        <input type="date" name="Date" value ="2018-05-15"><br>
-      </tr>
-      <tr>
-        <td><input type="submit"></input></td>
-      </tr>
-    </form>
-  </table>
-</fieldset>
-<br/>
-
-<fieldset>
-  <table>
-    <form action = "Xindex.php" method = "post" value= <?php echo $_POST['Location'] ?>>
-      <tr>
-        Change Location: <br>
-        <input type="radio" name="Location" value="Lot 35" checked> Lot 35<br>
-        <input type="radio" name="Location" value="Lot 54"> Lot 54<br>
-      </tr>
-      <tr>
-        <td><input type="submit"></input></td>
-      </tr>
-    </form>
-  </table>
-</fieldset>
-<br/>
-
-<fieldset>
-  <table>
-    <form action = "DummyInput.php" method = "post">
-      <tr>
-        Add Dummy Data: <br>
-        Start Date: <input type="date" name="Startdate" value="2018-04-22"><br>
-        End Date: <input type="date" name="Enddate" value="2018-04-29">
-      <tr>
-        <td><input type="submit"></input></td>
-      </tr>
-    </form>
-  </table>
-</fieldset>
-<br/>
 
 </div>
 
@@ -203,15 +144,15 @@ SECTION 2: form and such
 
 <!--
 ===========================================================================
-SECTION 3: query
+SECTION 3: query chart
 ===========================================================================
 -->
 
 <?php
 
 echo("<h1>Results</h1>");
-echo("<p>Total Count: ".($count)."</p>");
-echo("<p>Location: ".($Location)."</p>");
+echo("<p>Min: ".($min+1)."</p>");
+echo("<p>Max: ".($max-1)."</p>");
 
 ?>
 
@@ -235,27 +176,22 @@ echo("<p>Location: ".($Location)."</p>");
   <tr>
     <th>Entry</th>
     <th>Time</th>
-    <th>Date</th>
-    <th>Direction</th>
-
   </tr>
 
-<?php
+  <?php
 
-//sql
+  //creating the table of the final query
 
-$sql = "SELECT * FROM `$DBNAME` WHERE counter > $min AND counter < $max";
-$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+  $sql = "SELECT * FROM `$DBNAME` WHERE counter > $min AND counter < $max";
+  $rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 
-while($row = $rs->fetch(PDO::FETCH_ASSOC)) {
-  $counter = $row['counter'];
-  $time = $row['time'];
-  $direction = $row['Direction'];
-  $date = $row['date'];
-  echo("<tr><td>$counter</td><td>$time</td><td>$date</td><td>$direction</td></tr>");
-}
+  while($row = $rs->fetch(PDO::FETCH_ASSOC)) {
+    $counter = $row['counter'];
+    $time = $row['time'];
+    echo("<tr><td>$counter</td><td>$time</td></tr>");
+  }
 
-?>
+  ?>
 
 </table>
 
