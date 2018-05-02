@@ -10,18 +10,20 @@
     traffic data from the Arduino, and send it to the
     database.
 '''''''''''''''''''''''''''
-try:
-    import traceback
-except:
-    print("ERROR: Traceback couldn't be imported.")
+import sys
 
+# IMPROVEMENT: Error handling
 try:
     import DbConnector
     import serial
-except:
-    err = traceback.format_exc()
-    print("ERROR: Import error occurred; exiting.")
-    print(err)
+    from datetime import datetime
+    from threading import Timer
+    from _mysql import connect
+except Exception as e:
+    print("ERROR: Import error occurred: {}\nExiting.".format(e))
+    sys.exit()
+
+TIME_INTERVAL = 60
 
 #-----------------------------------------
 # Name: main
@@ -29,36 +31,77 @@ except:
 # PostCondition: Database entries will exist, with accurate information
 #                about car occupancy in a given parking lot.
 #-----------------------------------------
-def main():
-    try:
+class Main:
+    def __init__(self):
+
         # Define constants
         DEVPORT = '/dev/ttyACM0'    # Serial port used by Arduino on host machine
-        BAUDRATE = 9600
+        BAUDRATE = 115200
         DATABASE = "blake.nelson"
-        USER = "Blake.Nelson"
+        USER = "blake.nelson"
         PASSWD = "Tamu@2019"
-        LOCATION = ""               # Parking lot location
+        self.LOCATION = "Lot 35"         # Parking lot location
 
-        # Creating necessary objects
-        arduinoSerialData = serial.Serial(DEVPORT, BAUDRATE)    # Collect serial data from Ardunio
-        DbConnector database = DbConnector(db=DATABASE, user=USER, passwd=PASSWD)
+        self.times = []
+        self.board = serial.Serial(DEVPORT, BAUDRATE)
+        self.debug = False# (input("Debug mode? (y/n) ") == "y")
+        if not self.debug:
+            self.DbConnector = DbConnector.DbConnector(
+            DATABASE,
+            USER,
+            PASSWD
+            )
+        print("Initialization complete")
 
-        print("Running Delaware-2...")
+    def run(self):
+        self.running = True
+        try:
+            if not self.debug:
+                Timer(TIME_INTERVAL, self.sendData).start()
 
-        # Flush buffer before beginning
-        arduinoSerialData.flushInput()
-    except Exception as e:
-        print("ERROR Python setup failed: {}".format(e))
+                # Flush buffer before beginning
+                self.board.flushInput()
 
-    # Read data from Arduino
-    while True:
-        if arduinoSerialData.inWaiting() > 0:
-            # Recieved data from the Arduino
-            data = arduinoSerialData.read()
+                print("Setup complete")
 
-            # TODO: Assuming this is a timestamp. Likely to change
-            if data:
-                database.upload(data, LOCATION)
+                while True:
+                    # Current timestamp
+                    now = datetime.now()
+
+                    # Check for data in the serial buffer
+                    if self.board.inWaiting() > 0:
+                        # Received data from the Arduino
+                        data = self.board.read()
+                        print(str(now) + ": " + str(data))
+                        if data:
+                            self.addTimeStamp(data, now)
+
+        except Exception as e:
+            print("ERROR Python setup failed: {}".format(e))
+            sys.exit()
+
+    def sendData(self):
+        count = len(self.times)
+        if(count > 0):
+            print("Uploading data...")
+            for entry in self.times:
+                data = entry[0]
+                time = entry[1]
+                self.DbConnector.Upload(data, time, self.LOCATION)
+            self.times = []
+            print("Upload complete, sent " + str(count) + " items")
+        else:
+            print("No data, skipping upload")
+        # Run it again in a bit
+        Timer(TIME_INTERVAL, self.sendData).start()
+
+    def addTimeStamp(self, direction, timeStamp):
+        if self.debug:
+            pass
+        else:
+            print("Car passed at ", timeStamp)
+            self.times.append((direction, timeStamp))
 
 if __name__ == "__main__":
-    main()
+    m = Main()
+    m.run()
