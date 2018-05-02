@@ -33,18 +33,18 @@ TIME_INTERVAL = 60
 #-----------------------------------------
 class Main:
     def __init__(self):
-       # IMPROVEMENT: Constants
+
         # Define constants
         DEVPORT = '/dev/ttyACM0'    # Serial port used by Arduino on host machine
-        BAUDRATE = 9600
+        BAUDRATE = 115200
         DATABASE = "blake.nelson"
-        USER = "Blake.Nelson"
+        USER = "blake.nelson"
         PASSWD = "Tamu@2019"
-        LOCATION = ""               # Parking lot location
+        self.LOCATION = "Lot 35"         # Parking lot location
 
         self.times = []
         self.board = serial.Serial(DEVPORT, BAUDRATE)
-        self.debug = (input("Debug mode? (y/n) ") == "y")
+        self.debug = False# (input("Debug mode? (y/n) ") == "y")
         if not self.debug:
             self.DbConnector = DbConnector.DbConnector(
             DATABASE,
@@ -53,7 +53,7 @@ class Main:
             )
         print("Initialization complete")
 
-    def run():
+    def run(self):
         self.running = True
         try:
             if not self.debug:
@@ -72,21 +72,22 @@ class Main:
                     if self.board.inWaiting() > 0:
                         # Received data from the Arduino
                         data = self.board.read()
+                        print(str(now) + ": " + str(data))
                         if data:
-                            addTimeStamp(data, now)
+                            self.addTimeStamp(data, now)
 
         except Exception as e:
             print("ERROR Python setup failed: {}".format(e))
             sys.exit()
 
     def sendData(self):
-        count = len(times)
+        count = len(self.times)
         if(count > 0):
             print("Uploading data...")
-            for entry in times:
+            for entry in self.times:
                 data = entry[0]
                 time = entry[1]
-                self.DbConnector.Upload(data, time, LOCATION)
+                self.DbConnector.Upload(data, time, self.LOCATION)
             self.times = []
             print("Upload complete, sent " + str(count) + " items")
         else:
