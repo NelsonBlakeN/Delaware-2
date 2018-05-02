@@ -1,16 +1,13 @@
+
 <!--
-===========================================================================
-TODO:
+/* ****************************************************
+    File:       Xindex.php
+    Project:    CSCE 315 Project 2, Spring 2018
+    Date:       4/19/2018
+    Section:    504
 
-As if it can go between Lots 35 and 54 
-
-RECORD ALL CHANGES TO IMPROVEMENTS in PROJECT 2:
-
-Adding file to run helper functions
-
-
-
-===========================================================================
+    This file runs the main page of the website. It contains all the forms that lead to any other additional functionalities
+******************************************************* */
 -->
 
 <?php
@@ -59,7 +56,7 @@ $min1 = $min + 1;
 $max1 = $max - 1;
 
 //getting the number of entries in the database
-$count = $COMMON ->countrs($COMMON -> all("Lot 35"));
+$count = $COMMON ->CountRs($COMMON -> All("Lot 35"));
 
 ?>
 

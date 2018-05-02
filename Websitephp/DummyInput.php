@@ -1,3 +1,14 @@
+<!--
+/* ****************************************************
+    File:       Xindex.php
+    Project:    CSCE 315 Project 2, Spring 2018
+    Date:       4/19/2018
+    Section:    504
+
+    This php script adds test data to days in a range defined by two given date inputs
+******************************************************* */
+-->
+
 <?php
 
 include('CommonMethods.php');
@@ -26,7 +37,7 @@ if ($interval-> d > 30){
 }
 
 
-$COMMON-> random_data_for_range("Lot 35", $startdate,$enddate);
+$COMMON-> RandomDataForRange("Lot 35", $startdate,$enddate);
 echo("Dummy data added")
 
 ?>
