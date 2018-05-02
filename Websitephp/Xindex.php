@@ -6,15 +6,9 @@ As if it can go between Lots 35 and 54
 
 RECORD ALL CHANGES TO IMPROVEMENTS in PROJECT 2:
 
-Added direction to display and added that to the chart
-Added date and time fields to the MyAdmin Database
-Added fucntions to add test data and test button
-Added file to run helper functions
-Added basic counting fucntions to Common Methods
-Added Prediction functionality and support functions for Xindex and CommonMethods
-Added some information to the display chart
-Added an updating counter for a specified lot
-Added files and interfaces that allow for better visualizing of data in the database
+Adding file to run helper functions
+
+
 
 ===========================================================================
 -->

@@ -26,7 +26,7 @@ if ($interval-> d > 30){
 }
 
 
-$COMMON-> random_week_data("Lot 35", $startdate,$enddate);
+$COMMON-> random_data_for_range("Lot 35", $startdate,$enddate);
 echo("Dummy data added")
 
 ?>

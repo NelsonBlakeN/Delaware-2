@@ -101,7 +101,7 @@ class Common
 	// PreConditions:  takes in a database and a startdate object
 	// PostConditions: Manually adds data on each day of a determined week.
 	//----------------------------------
-	function random_week_data($database, $startdate,$enddate){
+	function random_data_for_range($database, $startdate,$enddate){
 		$dayarray = $this->daterange($startdate,$enddate);
 		for ($i = 0; $i < sizeof($dayarray); ++$i){
 			$this -> random_day_data($dayarray[$i],$database);
@@ -131,8 +131,7 @@ class Common
 	// --------------------------------
 	// Name: timerange
 	// PreConditions:  Two timestamps are given
-	// PostConditions: A list of entries that are assigned a time
-	//				   between the two given timestamps is returned.
+	// PostConditions: A list of times (at hour interval) entries between the two given timestamps is returned.
 	//----------------------------------
 	function timerange(dateTime $starttime, dateTime $endtime){
 		$times = array();
@@ -162,8 +161,7 @@ class Common
 	// --------------------------------
 	// Name: hourhistogram
 	// PreConditions:  two datetimes and a particular database are given
-	// PostConditions: an array of counts, representing a histogram of the hours inbetween those given
-	//					is returned
+	// PostConditions: an array of counts, representing a histogram of the hours inbetween those given is returned
 	//----------------------------------
 	function hourhistogram(dateTime $dt1, dateTime $dt2, $database){
 		$datearray = $this->timerange($dt1,$dt2);
