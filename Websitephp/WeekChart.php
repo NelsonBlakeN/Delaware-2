@@ -1,3 +1,14 @@
+<!--
+/* ****************************************************
+    File:       WeekChart.php
+    Project:    CSCE 315 Project 2, Spring 2018
+    Date:       4/19/2018
+    Section:    504
+
+    This page presents a bar chart that displays all the data in a given time range
+******************************************************* */
+-->
+
 <?php
 
 include('CommonMethods.php');
@@ -28,7 +39,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 //setting the chart properties
-$COMMON->setchartdays($dataPoints, $charttitle, $startdate, $enddate, "Lot 35");
+$COMMON->SetChartDays($dataPoints, $charttitle, $startdate, $enddate, "Lot 35");
 
 ?>
 

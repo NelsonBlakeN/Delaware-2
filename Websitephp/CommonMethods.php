@@ -1,3 +1,14 @@
+<!--
+/* ****************************************************
+    File:       CommonMethods.php
+    Project:    CSCE 315 Project 2, Spring 2018
+    Date:       4/19/2018
+    Section:    504
+
+    This file contains all the main php api and functions contained within the common class
+******************************************************* */
+-->
+
 <?php 
 
 class Common
@@ -52,7 +63,7 @@ class Common
 	// PostConditions: A query will be executed to the database, or
 	//				   a descrptive error including the filename will be presented.
 	//----------------------------------
-	function executeQuery($sql, $filename) // execute query
+	function ExecuteQuery($sql, $filename) // execute query
 	{
 		if($this->debug == true) { echo("$sql <br>\n"); }
 		$rs = $this->conn->query($sql) or die("Could not execute query '$sql' in $filename"); 
@@ -65,9 +76,9 @@ class Common
 	// PostConditions: A value will be returned that is equal to the
 	//				   number of entries in the database.
 	//----------------------------------
-	function all($DBname){
+	function All($DBname){
 		$sql = "SELECT * FROM `$DBname`";
-		$rs = $this->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+		$rs = $this->ExecuteQuery($sql, $_SERVER["SCRIPT_NAME"]);
 		return $rs;
 	}
 
@@ -77,7 +88,7 @@ class Common
 	// PostConditions: A value will be returned that is equal to the
 	//				   length of the given result list.
 	//----------------------------------
-	function countrs($rs){
+	function CountRs($rs){
 		$count = 0;
 		while ($row = $rs->fetch(PDO::FETCH_ASSOC)){
 			++$count;
@@ -86,36 +97,35 @@ class Common
 	}
 
 	// --------------------------------
-	// Name: daylist
+	// Name: DayList
 	// PreConditions:  a date is given
 	// PostConditions: An rs value from a day query will be returned
 	//----------------------------------
-	function daylist($date, $database){
+	function DayList($date, $database){
 		$sql = "SELECT * FROM `$database` WHERE date = '$date'";
-		$rs = $this->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+		$rs = $this->ExecuteQuery($sql, $_SERVER["SCRIPT_NAME"]);
 		return $rs;
 	}
 
 	// --------------------------------
-	// Name: AddDummyWeek
+	// Name: RandomDataForRange
 	// PreConditions:  takes in a database and a startdate object
 	// PostConditions: Manually adds data on each day of a determined week.
 	//----------------------------------
-	function random_data_for_range($database, $startdate,$enddate){
-		$dayarray = $this->daterange($startdate,$enddate);
+	function RandomDataForRange($database, $startdate,$enddate){
+		$dayarray = $this->DateRange($startdate,$enddate);
 		for ($i = 0; $i < sizeof($dayarray); ++$i){
-			$this -> random_day_data($dayarray[$i],$database);
+			$this -> RandomDayData($dayarray[$i],$database);
 		}
-		//$this -> random_day_data('2018-4-25',$database);
 	}
 
 	// --------------------------------
-	// Name: random_day_data
+	// Name: RandomDayData
 	// PreConditions:  A date is given
 	// PostConditions: Adds a fake day, with a random number of
 	//				   people added to the database for that day
 	//----------------------------------
-	function random_day_data($date, $database){
+	function RandomDayData($date, $database){
 		$ppl = rand(20,600);
 		for ($i = 0; $i < $ppl; ++$i){
 			$h = rand(0,23);
@@ -124,16 +134,16 @@ class Common
 			$b = rand(0,1);
 			$time = $h . ":" . $m . ":" . $s;
 			$sql= "INSERT INTO `$database`(`counter`,`time`, `Direction`, `date`) VALUES (DEFAULT,'$time',$b,'$date')";
-			$rs = $this-> executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+			$rs = $this-> ExecuteQuery($sql, $_SERVER["SCRIPT_NAME"]);
 		}
 	}
 
 	// --------------------------------
-	// Name: timerange
+	// Name: Timerange
 	// PreConditions:  Two timestamps are given
 	// PostConditions: A list of times (at hour interval) entries between the two given timestamps is returned.
 	//----------------------------------
-	function timerange(dateTime $starttime, dateTime $endtime){
+	function Timerange(dateTime $starttime, dateTime $endtime){
 		$times = array();
 		$period = new DatePeriod($starttime, new DateInterval('PT1H'), $endtime);
 		foreach ($period as $key => $value) {
@@ -147,39 +157,39 @@ class Common
 	// PreConditions:  An hour timestamp is given
 	// PostConditions: An rs for all entries from the given hour is returned
 	//----------------------------------
-	function hourlist(dateTime $datetime, $database){
+	function HourList(dateTime $datetime, $database){
 		$hour = $datetime->format('H');
 		$date = $datetime->format('Y-m-d');
 		$dt1 = $datetime -> format('Y-m-d H:i:s');
 		$dt2 = $datetime ->modify('+1 hour');
 		$dt2 = $dt2 -> format('Y-m-d H:i:s');
 		$sql = "SELECT * FROM `$database` WHERE timestamp(date,time) BETWEEN '$dt1' AND '$dt2'";
-		$rs = $this->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+		$rs = $this->ExecuteQuery($sql, $_SERVER["SCRIPT_NAME"]);
 		return $rs;
 	}
 
 	// --------------------------------
-	// Name: hourhistogram
+	// Name: HourHistogram
 	// PreConditions:  two datetimes and a particular database are given
 	// PostConditions: an array of counts, representing a histogram of the hours inbetween those given is returned
 	//----------------------------------
-	function hourhistogram(dateTime $dt1, dateTime $dt2, $database){
-		$datearray = $this->timerange($dt1,$dt2);
+	function HourHistogram(dateTime $dt1, dateTime $dt2, $database){
+		$datearray = $this->Timerange($dt1,$dt2);
 		$countarray = array();
 		foreach ($datearray as $date){
-			$rs = $this-> hourlist($date, $database);
-			$daycount = $this->countrs($rs);
+			$rs = $this-> HourList($date, $database);
+			$daycount = $this->CountRs($rs);
 			array_push($countarray, $daycount);
 		}
 		return $countarray;
 	}
 
 	// --------------------------------
-	// Name: polynomial_prediction
+	// Name: PolynomialPrediction
 	// PreConditions:  two arrays representing the data from three days before is given
 	// PostConditions: a y value of the prediction for the fourth day
 	//----------------------------------
-	function polynomial_prediction(array $x, array $y, $xi){
+	function PolynomialPrediction(array $x, array $y, $xi){
 		$p1x = $x[0] + 0.5;
 		$p2x = $x[1] + 0.5;
 		$p1y = (($y[1] - $y[0]) / 2) + $y[0];
@@ -194,15 +204,15 @@ class Common
 	}
 
 	// --------------------------------
-	// Name: add_predicted_hour
+	// Name: AddPredictedHour
 	// PreConditions:  takes chart data array and an hour as input
 	// PostConditions: adds predicted hour to the chardata (by reference)
 	//----------------------------------
-	function add_predicted_hour(&$chartdata,$hour,$date,$database){
+	function AddPredictedHour(&$chartdata,$hour,$date,$database){
 		$lastthree = array_slice($chartdata, -4, 3);
 		
 		//create an array of helpful past days
-		$startdate = $this -> firstdate($database);
+		$startdate = $this -> FirstDate($database);
 
 		//polynomial method
 		$x = array();
@@ -212,18 +222,18 @@ class Common
 			array_push($y, $current['y']);
 		}
 		$predictx = end($x) + 1;
-		$polyprediction = $this-> polynomial_prediction($x, $y, $predictx);
+		$polyprediction = $this-> PolynomialPrediction($x, $y, $predictx);
 
 		//average the hour prediction with past relevent dates
-		$startdate = $this->firstdate($database);
-		$pastdates = $this -> get_relevent_dates($startdate,$date);
+		$startdate = $this->FirstDate($database);
+		$pastdates = $this -> GetReleventDates($startdate,$date);
 
 		if (count($pastdates) > 0)echo("Relevent data found and factored in from "); echo("<br>");
 		$hourdata = array();
 		foreach($pastdates as $date){
 			$dt1 = new datetime($date);
 			$dt1 -> setTime($hour[0]-1,"00");
-			array_push($hourdata, $this->countrs($this->hourlist($dt1,$database)));
+			array_push($hourdata, $this->CountRs($this->HourList($dt1,$database)));
 			echo($dt1->format("Y-m-d H:i:s")); echo("<br>");
 		}
 		array_push($hourdata, $polyprediction);
@@ -237,13 +247,13 @@ class Common
 	}
 
 	// --------------------------------
-	// Name: firstdate
+	// Name: FirstDate
 	// PreConditions:  the referenced database
 	// PostConditions: returns the yyyy-mm-dd date of the first entry in the database
 	//----------------------------------
-	function firstdate($DBname){
+	function FirstDate($DBname){
 		$sql = "SELECT * FROM `$DBname` LIMIT 1";
-		$rs = $this->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+		$rs = $this->ExecuteQuery($sql, $_SERVER["SCRIPT_NAME"]);
 		//var_dump($rs);
 		$row = $rs->fetch(PDO::FETCH_ASSOC);
 		$date = $row['date'];
@@ -251,11 +261,11 @@ class Common
 	}
 
 	// --------------------------------
-	// Name: set_chart_hour_prediction
+	// Name: SetChartHourPrediction
 	// PreConditions:  takes all the variables that the JS chart needs to generate graph
 	// PostConditions: modifies them so that the chart presents the prediction
 	//----------------------------------	
-	function set_chart_hour_prediction(&$chartdata, &$title, $hour, $date, $database){
+	function SetChartHourPrediction(&$chartdata, &$title, $hour, $date, $database){
 		//divide the hour input
 		$time = explode(":",$hour);
 		$datearray = explode("-", $date);
@@ -276,8 +286,8 @@ class Common
 		
 
 		//set the chart data
-		$times = $this->timerange($dt1,$dt2);
-		$counts = $this -> hourhistogram($dt1,$dt2, $database);
+		$times = $this->Timerange($dt1,$dt2);
+		$counts = $this -> HourHistogram($dt1,$dt2, $database);
 		$newcdata = array();
 		for ($i = 0; $i < sizeof($times); ++$i){
 			array_push($newcdata, array(
@@ -295,15 +305,15 @@ class Common
 		$timestring = $dt2 ->format('Y-m-d H:i:s');
 		$title = "Prediction for $timestring";
 
-		$this -> add_predicted_hour($chartdata, $time, $date, $database);
+		$this -> AddPredictedHour($chartdata, $time, $date, $database);
 	}
 
 	// --------------------------------
-	// Name: getdatenames
+	// Name: GetDateNames
 	// PreConditions:  takes in two dates
 	// PostConditions: outputs an array of date names (Monday, tuesday ect.)
 	//----------------------------------	
-	function getdatenames($startdate, $enddate){
+	function GetDateNames($startdate, $enddate){
 		$date1 = new DateTime($startdate);
 		$date2 = new DateTime($enddate);
 		$date2->modify('+1 day');
@@ -320,27 +330,27 @@ class Common
 	}
 
 	// --------------------------------
-	// Name: dayhistogram
+	// Name: DayHistogram
 	// PreConditions:  two dates and a database are given
 	// PostConditions: a histogram of cars that were recorded on those days is returned in array form
 	//----------------------------------	
-	function dayhistogram($startdate,$enddate,$database){
-		$datearray = $this-> daterange($startdate,$enddate);
+	function DayHistogram($startdate,$enddate,$database){
+		$datearray = $this-> DateRange($startdate,$enddate);
 		$countarray = array();
 		foreach ($datearray as $date){
-			$rs = $this-> daylist("$date",$database);
-			$daycount = $this->countrs($rs);
+			$rs = $this-> DayList("$date",$database);
+			$daycount = $this->CountRs($rs);
 			array_push($countarray, $daycount);
 		}
 		return $countarray;
 	}
 
 	// --------------------------------
-	// Name: daterange
+	// Name: DateRange
 	// PreConditions:  two dates are given
 	// PostConditions: a lis of dates between those two dates is returned
 	//----------------------------------	
-	function daterange($startdate,$enddate){
+	function DateRange($startdate,$enddate){
 		$date1 = new DateTime($startdate);
 		$date2 = new DateTime($enddate);
 		$date2->modify('+1 day');
@@ -358,11 +368,11 @@ class Common
 	}
 
 	// --------------------------------
-	// Name: get_relevent_dates
+	// Name: GetReleventDates
 	// PreConditions:  two dates are given
 	// PostConditions: a list of every day that
 	//----------------------------------	
-	function get_relevent_dates($startdate,$enddate){
+	function GetReleventDates($startdate,$enddate){
 		$date1 = new DateTime($startdate);
 		$date2 = new DateTime($enddate);
 
@@ -379,17 +389,17 @@ class Common
 	}
 
 	// --------------------------------
-	// Name: setchartdays
+	// Name: SetChartDays
 	// PreConditions:  chart information is passed by reference
 	// PostConditions: that information is modified and prepared for use in a chart to present the frequency of cars counted between two dates. Note that the range cannot be greater than one week
 	//----------------------------------
-	function setchartdays(&$chartdata, &$title, $startdate, $enddate, $database){
+	function SetChartDays(&$chartdata, &$title, $startdate, $enddate, $database){
 
 		//setting the chart data
 		$newcdata = array();
-		$dates = $this-> daterange($startdate,$enddate);
-		$counts = $this-> dayhistogram($startdate,$enddate,$database);
-		$datenames = $this-> getdatenames($startdate, $enddate);
+		$dates = $this-> DateRange($startdate,$enddate);
+		$counts = $this-> DayHistogram($startdate,$enddate,$database);
+		$datenames = $this-> GetDateNames($startdate, $enddate);
 		for ($i = 0; $i < sizeof($dates); ++$i){
 			array_push($newcdata, array("label"=> $datenames[$i], "y"=> $counts[$i]));
 		}
