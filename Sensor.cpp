@@ -14,17 +14,18 @@
 
 #include "Sensor.h"
 
-
-
-void Sensor::calibrate_avg(byte readings, float padding)
+// Calibrates the sensor by collecting an average value
+void Sensor::CalibrateAvg(byte readings, float padding)
 {
   float avg = 0;
 
+  // Read from the sensor
   for (byte i = 0; i < readings; i++)
   {
     avg += sensor->ping_cm();
   }
 
+  // Average readings for calibration
   avg = avg / readings;
   minimum = avg / padding;
   if (minimum < 25)
@@ -32,32 +33,27 @@ void Sensor::calibrate_avg(byte readings, float padding)
     minimum = 200;
   }
   maximum = avg * padding;
-//  Serial.print("Minimum: ");
-//  Serial.println(minimum);
-//  Serial.print("Maximum: ");
-//  Serial.println(maximum);
 }
 
-
-
-void Sensor::calibrate(byte readings, float padding)
+// Calibrates the sensor by reading a set number of data points
+// and adjusts future readings based on these values.
+void Sensor::Calibrate(byte readings, float padding)
 {
-  calibrate_avg(readings, padding);
-//  Serial.print("Calibration complete\n");
+  CalibrateAvg(readings, padding);
 }
 
-
-
-int Sensor::read()
+// Reads from the ultrasonic sensor and adjusts the results
+// using the calibration values.
+int Sensor::Read()
 {
-//  Serial.println("Pinging");
+  // Read sensor
   int reading = sensor->ping_cm();
+  
+  // Adjust based on calibration
   if (reading == 0)
   {
     reading = 200;
   }
-//  Serial.println("Done pinging");
-//  Serial.print("Reading: ");
   if (reading < minimum)
   {
     reading -= minimum;
@@ -70,13 +66,12 @@ int Sensor::read()
   {
     reading = 0;
   }
-//  Serial.println(reading);
-//  Serial.println("Done reading");
+  
   return reading;
 }
 
-
-
+// Constructor to create the Sensor object, based on pin values
+// and a timeout distance.
 Sensor::Sensor(byte triggerPin, byte echoPin, unsigned int timeoutDistance)
 {
   sensor    = new NewPing(triggerPin, echoPin, timeoutDistance);

@@ -30,6 +30,11 @@ const int MAX_DISTANCE  = 200;
 // Global class pointer
 SensorGroup* sensorGroup;
 
+//-----------------------------------------
+// Name: setup
+// PreCondition:  None
+// PostCondition: 
+//-----------------------------------------
 void setup()
 {
   // Signal events over serial
@@ -38,17 +43,20 @@ void setup()
 
   sensorGroup = new SensorGroup();
 
-  sensorGroup->add(trigger0, echo0, MAX_DISTANCE);
-  sensorGroup->add(trigger1, echo1, MAX_DISTANCE);
-  sensorGroup->add(trigger2, echo2, MAX_DISTANCE);
+  sensorGroup->Add(trigger0, echo0, MAX_DISTANCE);
+  sensorGroup->Add(trigger1, echo1, MAX_DISTANCE);
+  sensorGroup->Add(trigger2, echo2, MAX_DISTANCE);
 
   sensorGroup->Setup();
 }
 
+//-----------------------------------------
+// Name: loop
+// PreCondition:  None
+// PostCondition: 
+//-----------------------------------------
 void loop()
 {
-//  Serial.println("Polling");
   sensorGroup->poll();
-//  Serial.println("Done Polling");
   delay(100);
 }
