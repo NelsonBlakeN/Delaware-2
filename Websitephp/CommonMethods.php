@@ -25,13 +25,13 @@ class Common
 	// Name: Common
 	// PreConditions:  A debug value must be present.
 	// PostConditions: An API object will be created, which will be
-	//				   connected to the database. It's debug level will
+	//				   Connected to the database. It's debug level will
 	//				   also be assigned based on the passed value
 	//----------------------------------		
 	function Common($debug)
 	{
 		$this->debug = $debug; 
-		$rs = $this->connect($this->user); // db name really here
+		$rs = $this->Connect($this->user); // db name really here
 		return $rs;
 	}
 
@@ -41,10 +41,10 @@ class Common
 	// --------------------------------
 	// Name: Connect
 	// PreConditions:  None
-	// PostConditions: A valud connection will be made to the database,
-	//				   or a descriptive error on a failed connection will be presented.
+	// PostConditions: A valud Connection will be made to the database,
+	//				   or a descriptive error on a failed Connection will be presented.
 	//----------------------------------
-	function connect($db)// connect to MySQL DB Server
+	function Connect($db)// Connect to MySQL DB Server
 	{
 		try
 		{
@@ -109,11 +109,11 @@ class Common
 
 	// --------------------------------
 	// Name: RandomDataForRange
-	// PreConditions:  takes in a database and a startdate object
+	// PreConditions:  takes in a database and a startDate object
 	// PostConditions: Manually adds data on each day of a determined week.
 	//----------------------------------
-	function RandomDataForRange($database, $startdate,$enddate){
-		$dayarray = $this->DateRange($startdate,$enddate);
+	function RandomDataForRange($database, $startDate, $endDate){
+		$dayarray = $this->DateRange($startDate,$endDate);
 		for ($i = 0; $i < sizeof($dayarray); ++$i){
 			$this -> RandomDayData($dayarray[$i],$database);
 		}
@@ -212,7 +212,7 @@ class Common
 		$lastthree = array_slice($chartdata, -4, 3);
 		
 		//create an array of helpful past days
-		$startdate = $this -> FirstDate($database);
+		$startDate = $this -> FirstDate($database);
 
 		//polynomial method
 		$x = array();
@@ -225,8 +225,8 @@ class Common
 		$polyprediction = $this-> PolynomialPrediction($x, $y, $predictx);
 
 		//average the hour prediction with past relevent dates
-		$startdate = $this->FirstDate($database);
-		$pastdates = $this -> GetReleventDates($startdate,$date);
+		$startDate = $this->FirstDate($database);
+		$pastdates = $this -> GetReleventDates($startDate,$date);
 
 		if (count($pastdates) > 0)echo("Relevent data found and factored in from "); echo("<br>");
 		$hourdata = array();
@@ -313,20 +313,20 @@ class Common
 	// PreConditions:  takes in two dates
 	// PostConditions: outputs an array of date names (Monday, tuesday ect.)
 	//----------------------------------	
-	function GetDateNames($startdate, $enddate){
-		$date1 = new DateTime($startdate);
-		$date2 = new DateTime($enddate);
+	function GetDateNames($startDate, $endDate){
+		$date1 = new DateTime($startDate);
+		$date2 = new DateTime($endDate);
 		$date2->modify('+1 day');
-		$datenames = array();
+		$dateNames = array();
 		$period = new DatePeriod(
 		     $date1,
 		     new DateInterval('P1D'),
 		     $date2
 		);
 		foreach ($period as $key => $value) {
-     		array_push($datenames, $value->format('l'));
+     		array_push($dateNames, $value->format('l'));
 		}
-		return $datenames;
+		return $dateNames;
 	}
 
 	// --------------------------------
@@ -334,8 +334,8 @@ class Common
 	// PreConditions:  two dates and a database are given
 	// PostConditions: a histogram of cars that were recorded on those days is returned in array form
 	//----------------------------------	
-	function DayHistogram($startdate,$enddate,$database){
-		$datearray = $this-> DateRange($startdate,$enddate);
+	function DayHistogram($startDate,$endDate,$database){
+		$datearray = $this-> DateRange($startDate,$endDate);
 		$countarray = array();
 		foreach ($datearray as $date){
 			$rs = $this-> DayList("$date",$database);
@@ -350,9 +350,9 @@ class Common
 	// PreConditions:  two dates are given
 	// PostConditions: a lis of dates between those two dates is returned
 	//----------------------------------	
-	function DateRange($startdate,$enddate){
-		$date1 = new DateTime($startdate);
-		$date2 = new DateTime($enddate);
+	function DateRange($startDate,$endDate){
+		$date1 = new DateTime($startDate);
+		$date2 = new DateTime($endDate);
 		$date2->modify('+1 day');
 
 		$dates = array();
@@ -372,9 +372,9 @@ class Common
 	// PreConditions:  two dates are given
 	// PostConditions: a list of every day that
 	//----------------------------------	
-	function GetReleventDates($startdate,$enddate){
-		$date1 = new DateTime($startdate);
-		$date2 = new DateTime($enddate);
+	function GetReleventDates($startDate,$endDate){
+		$date1 = new DateTime($startDate);
+		$date2 = new DateTime($endDate);
 
 		//skip the same day
 		$date2 -> modify("-7 day");
@@ -393,21 +393,21 @@ class Common
 	// PreConditions:  chart information is passed by reference
 	// PostConditions: that information is modified and prepared for use in a chart to present the frequency of cars counted between two dates. Note that the range cannot be greater than one week
 	//----------------------------------
-	function SetChartDays(&$chartdata, &$title, $startdate, $enddate, $database){
+	function SetChartDays(&$chartdata, &$title, $startDate, $endDate, $database){
 
 		//setting the chart data
 		$newcdata = array();
-		$dates = $this-> DateRange($startdate,$enddate);
-		$counts = $this-> DayHistogram($startdate,$enddate,$database);
-		$datenames = $this-> GetDateNames($startdate, $enddate);
+		$dates = $this-> DateRange($startDate,$endDate);
+		$counts = $this-> DayHistogram($startDate,$endDate,$database);
+		$datenames = $this-> GetDateNames($startDate, $endDate);
 		for ($i = 0; $i < sizeof($dates); ++$i){
 			array_push($newcdata, array("label"=> $datenames[$i], "y"=> $counts[$i]));
 		}
 		$chartdata = $newcdata;
 
 		//setting the title
-		$date1 = new DateTime($startdate);
-		$date2 = new DateTime($enddate);
+		$date1 = new DateTime($startDate);
+		$date2 = new DateTime($endDate);
 		$date1 = $date1->format('m-d-Y');
 		$date2 = $date2->format('m-d-Y');
 		$title = "Cars from $date1 to $date2";
